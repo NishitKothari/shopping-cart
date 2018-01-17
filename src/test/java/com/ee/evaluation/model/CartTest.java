@@ -1,6 +1,8 @@
 package com.ee.evaluation.model;
 
 import com.ee.evaluation.bill.BillGenerator;
+import com.ee.evaluation.offer.BuyXGetYOffer;
+import com.ee.evaluation.offer.GetNPercentageOff;
 import com.ee.evaluation.offer.Offer;
 import com.ee.evaluation.util.BillingUtils;
 import org.junit.Assert;
@@ -23,7 +25,7 @@ public class CartTest {
   private static final BigDecimal TAX_RATE = new BigDecimal(0.125);
 
   private final Product DOVE_SOAP = new Product("Dove Soap", new BigDecimal(39.99));
-  private final Product AXE_DEO = new Product("Axe Deo", new BigDecimal(99.99));
+  private final Product AXE_DEO = new Product("Axe Deo", new BigDecimal(89.99));
 
   @Test(expected = IllegalArgumentException.class)
   public void addingNullProductToCartShouldThrowException(){
@@ -100,12 +102,26 @@ public class CartTest {
     int xValue = 2;
     int yValue = 1;
 
-    final Offer buy2Get1Offer = new Offer(xValue, yValue, DOVE_SOAP);
+    final Offer buy2Get1Offer = new BuyXGetYOffer(xValue, yValue, DOVE_SOAP);
 
     //When
     cart.addItem(new Cart.CartItem(DOVE_SOAP, 3)).addItem(new Cart.CartItem(AXE_DEO, 2)).applyOffer(buy2Get1Offer);
 
     //Then
     Assert.assertEquals(BillingUtils.formatToTwoDecimalPoints(new BigDecimal(314.96)),BillGenerator.of(cart).generateTotal(TAX_RATE));
+  }
+
+  @Test
+  public void testProductCartPriceWithGet20PercentageDiscount(){
+    //Given
+    Cart cart = new Cart();
+
+    final Offer get20PercentageOffer = new GetNPercentageOff(new BigDecimal(0.20), new BigDecimal(500));
+
+    //When
+    cart.addItem(new Cart.CartItem(DOVE_SOAP, 5)).addItem(new Cart.CartItem(AXE_DEO, 4)).applyOffer(get20PercentageOffer);
+
+    //Then
+    Assert.assertEquals(BillingUtils.formatToTwoDecimalPoints(new BigDecimal(503.93)),BillGenerator.of(cart).generateTotal(TAX_RATE));
   }
 }

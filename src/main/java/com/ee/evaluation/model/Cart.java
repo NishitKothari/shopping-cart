@@ -1,5 +1,6 @@
 package com.ee.evaluation.model;
 
+import com.ee.evaluation.offer.BuyXGetYOffer;
 import com.ee.evaluation.offer.Offer;
 import com.ee.evaluation.util.BillingUtils;
 
