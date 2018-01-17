@@ -21,15 +21,8 @@ public class BillGenerator {
    * Returns Total Tax amount for Cart.
    * @return tax amount
    */
-  public BigDecimal generateTax() {
-
-    BigDecimal totalTaxAmount = BigDecimal.ZERO;
-
-    for (final Cart.CartItem cartItem : cart.getCartItems()) {
-      final BigDecimal cartItemPrice = cartItem.calculateCartItemPrice();
-      totalTaxAmount = totalTaxAmount.add(cartItemPrice.multiply(cartItem.getProduct().getTaxRate()));
-    }
-    return BillingUtils.formatToTwoDecimalPoints(totalTaxAmount);
+  private BigDecimal generateTaxOnAmount(final BigDecimal cartTotal,final BigDecimal taxRate) {
+    return BillingUtils.formatToTwoDecimalPoints(cartTotal.multiply(taxRate));
   }
 
   /**
@@ -37,7 +30,7 @@ public class BillGenerator {
    *
    * @return total price of cart items with two precision and roundingMode being ROUND_HALF_UP
    */
-  public final BigDecimal generateCartItemsTotal() {
+  private BigDecimal generateCartItemsTotal() {
     BigDecimal totalCartPrice = BigDecimal.ZERO;
 
     for (final Cart.CartItem cartItem : cart.getCartItems()) {
@@ -50,7 +43,9 @@ public class BillGenerator {
    * Generates total payable amount at checkout.
    * @return total payable amount at checkout
    */
-  public final BigDecimal generateTotalPayablePrice() {
-    return generateTax().add(generateCartItemsTotal());
+  public final BigDecimal generateTotalPayablePriceWithTax(final BigDecimal taxRate) {
+    final BigDecimal cartTotal  = generateCartItemsTotal();
+    final BigDecimal taxValue = generateTaxOnAmount(cartTotal,taxRate);
+    return BillingUtils.formatToTwoDecimalPoints(cartTotal.add(taxValue));
   }
 }

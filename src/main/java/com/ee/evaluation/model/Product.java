@@ -11,12 +11,10 @@ public final class Product {
 
   private final String name;
   private final BigDecimal unitPrice;
-  private final BigDecimal taxRate;
 
-  public Product(final String name, final BigDecimal unitPrice, final BigDecimal taxRate) {
+  public Product(final String name, final BigDecimal unitPrice) {
     this.name = name;
     this.unitPrice = unitPrice;
-    this.taxRate = taxRate;
   }
 
   /**
@@ -35,13 +33,6 @@ public final class Product {
     return unitPrice;
   }
 
-  /**
-   * Returns Tax Rate of a product.
-   * @return tax rate
-   */
-  public BigDecimal getTaxRate() {
-    return taxRate;
-  }
 
   @Override
   public boolean equals(final Object o) {
@@ -61,7 +52,6 @@ public final class Product {
     final StringBuilder sb = new StringBuilder("Product{");
     sb.append("name='").append(name).append('\'');
     sb.append(", unitPrice=").append(unitPrice);
-    sb.append(", taxRate=").append(taxRate);
     sb.append('}');
     return sb.toString();
   }
