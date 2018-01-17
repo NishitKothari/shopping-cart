@@ -39,13 +39,22 @@ public class BillGenerator {
     return totalCartPrice;
   }
 
+  private BigDecimal getDiscountAmount(){
+    return BillingUtils.formatToTwoDecimalPoints(cart.getOffer().map(offer -> offer.discountedPrice(this.cart.getCartItems())).orElse(BigDecimal.ZERO));
+  }
+
   /**
    * Generates total payable amount at checkout.
    * @return total payable amount at checkout
    */
-  public final BigDecimal generateTotalPayablePriceWithTax(final BigDecimal taxRate) {
+  public final BigDecimal generateTotal(final BigDecimal taxRate) {
     final BigDecimal cartTotal  = generateCartItemsTotal();
-    final BigDecimal taxValue = generateTaxOnAmount(cartTotal,taxRate);
-    return BillingUtils.formatToTwoDecimalPoints(cartTotal.add(taxValue));
+    final BigDecimal discountPrice = getDiscountAmount();
+
+    final BigDecimal cartTotalAfterOffer = cartTotal.subtract(discountPrice);
+
+    final BigDecimal taxValue = generateTaxOnAmount(cartTotalAfterOffer, taxRate);
+
+    return BillingUtils.formatToTwoDecimalPoints(cartTotalAfterOffer.add(taxValue));
   }
 }

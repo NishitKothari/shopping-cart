@@ -1,5 +1,6 @@
 package com.ee.evaluation.model;
 
+import com.ee.evaluation.offer.Offer;
 import com.ee.evaluation.util.BillingUtils;
 
 import java.math.BigDecimal;
@@ -16,6 +17,8 @@ import java.util.function.Predicate;
 public final class Cart {
 
   private final Set<CartItem> items = new LinkedHashSet<>();
+
+  private Optional<Offer> offer = Optional.empty();
 
   /**
    * Adds Item to a Cart if same product is not available in cart. If same product already exist
@@ -40,12 +43,21 @@ public final class Cart {
     return this;
   }
 
+  public final Cart applyOffer(final Offer buy2Get1Offer) {
+    this.offer = Optional.of(buy2Get1Offer);
+    return this;
+  }
+
   /**
    * Returns read only copy of Cart Items.
    * @return cart items
    */
   public Set<CartItem> getCartItems() {
     return Collections.unmodifiableSet(items);
+  }
+
+  public Optional<Offer> getOffer() {
+    return offer;
   }
 
   /**
@@ -98,7 +110,7 @@ public final class Cart {
       return product;
     }
 
-    int getQuantity() {
+    public int getQuantity() {
       return quantity;
     }
 

@@ -1,6 +1,7 @@
 package com.ee.evaluation.model;
 
 import com.ee.evaluation.bill.BillGenerator;
+import com.ee.evaluation.offer.Offer;
 import com.ee.evaluation.util.BillingUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class CartTest {
     cart.addItem(new Cart.CartItem(DOVE_SOAP, 5));
 
     //Then
-    Assert.assertEquals(BillGenerator.of(cart).generateTotalPayablePriceWithTax(TAX_RATE), PRICE_224_94);
+    Assert.assertEquals(BillGenerator.of(cart).generateTotal(TAX_RATE), PRICE_224_94);
     Assert.assertEquals(cart.findQuantityByProduct(DOVE_SOAP), 5);
   }
 
@@ -73,7 +74,7 @@ public class CartTest {
     cart.addItem(new Cart.CartItem(DOVE_SOAP, 5)).addItem(new Cart.CartItem(DOVE_SOAP, 3));
 
     //Then
-    Assert.assertEquals(BillGenerator.of(cart).generateTotalPayablePriceWithTax(TAX_RATE), PRICE_359_91);
+    Assert.assertEquals(BillGenerator.of(cart).generateTotal(TAX_RATE), PRICE_359_91);
     Assert.assertEquals(cart.findQuantityByProduct(DOVE_SOAP), 8);
   }
 
@@ -86,8 +87,25 @@ public class CartTest {
     cart.addItem(new Cart.CartItem(DOVE_SOAP, 2)).addItem(new Cart.CartItem(AXE_DEO, 2));
 
     //Then
-    Assert.assertEquals(PRICE_314_96,BillGenerator.of(cart).generateTotalPayablePriceWithTax(TAX_RATE));
+    Assert.assertEquals(PRICE_314_96,BillGenerator.of(cart).generateTotal(TAX_RATE));
     Assert.assertEquals(cart.findQuantityByProduct(DOVE_SOAP), 2);
     Assert.assertEquals(cart.findQuantityByProduct(AXE_DEO), 2);
+  }
+
+  @Test
+  public void testProductCartPriceWithBuyXGetYOffer(){
+    //Given
+    Cart cart = new Cart();
+
+    int xValue = 2;
+    int yValue = 1;
+
+    final Offer buy2Get1Offer = new Offer(xValue, yValue, DOVE_SOAP);
+
+    //When
+    cart.addItem(new Cart.CartItem(DOVE_SOAP, 3)).addItem(new Cart.CartItem(AXE_DEO, 2)).applyOffer(buy2Get1Offer);
+
+    //Then
+    Assert.assertEquals(BillingUtils.formatToTwoDecimalPoints(new BigDecimal(314.96)),BillGenerator.of(cart).generateTotal(TAX_RATE));
   }
 }
